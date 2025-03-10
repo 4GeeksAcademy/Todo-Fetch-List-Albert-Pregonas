@@ -32,7 +32,7 @@ const Component = () => {
                 type="text" 
                 style={{ height: "6vh", width: "30vw", fontSize: "1.2em", border: "1px solid grey", paddingLeft: "20px" }} 
                 value={input}
-                className="inpt mb-1"
+                className="inpt mb-1 rounded-1 bg-dark text-light"
                 onChange={handleInput}
                 onKeyDown={handleKeyDown}
                 onFocus={() => input === "Escribe una tarea..." && setInput("")}
@@ -46,6 +46,11 @@ const Component = () => {
                     </div>
                 ))}
             </div>
+            <footer className="text-light mt-3">
+                {array.length === 0 
+                    ? "No hay tareas, añadir tareas" 
+                    : `Tienes ${array.length} tarea${array.length > 1 ? "s" : ""}`}
+            </footer>
         </div>
     );
 };

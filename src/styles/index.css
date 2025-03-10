@@ -9,12 +9,22 @@
     import 'relative/path/to/stylesheet.scss';
 
 */
+.toDoBox{
+    border: solid 1px grey;
+}
+
+
 .cardBox{
-    background-color: white;
+    border-color: grey;
+    height: 6vh;
+    width: 30vw;
+    font-size: 1.2em;
+    padding-left: 20px;
+    border: solid grey 1px;
 }
 
 .cardBox:hover{
-    background-color: lightgrey;
+    border: solid 1px white;
     cursor: pointer
 }
 
@@ -28,4 +38,5 @@
 
 .task-container:hover .delete-icon {
     opacity: 1;
+    color: white;
 }
