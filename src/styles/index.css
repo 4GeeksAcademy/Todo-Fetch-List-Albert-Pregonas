@@ -9,3 +9,23 @@
     import 'relative/path/to/stylesheet.scss';
 
 */
+.cardBox{
+    background-color: white;
+}
+
+.cardBox:hover{
+    background-color: lightgrey;
+    cursor: pointer
+}
+
+.delete-icon {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    cursor: pointer;
+    opacity: 0;
+}
+
+.task-container:hover .delete-icon {
+    opacity: 1;
+}
