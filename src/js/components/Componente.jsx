@@ -1,9 +1,94 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Card from "./Card";
 
 const Component = () => {
-    const [input, setInput] = useState("Escribe una tarea...");
+    const api = "https://playground.4geeks.com/todo";
+    const user = "albertpregonas";
+    const [input, setInput] = useState("");
     const [array, setArray] = useState([]);
+
+    // Código API
+    useEffect(() => {
+        getTask();
+    }, []);
+
+    // GET
+    const getTask = () => {
+        fetch(`${api}/users/${user}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+        .then(resp => resp.json())
+        .then(data => {
+            console.log("Tareas recibidas:", data.todos);
+            if (Array.isArray(data.todos)) {
+                let falseTodos = data.todos.filter(item => item.is_done !== true)
+                setArray(falseTodos)
+                // setArray(data.todos);
+            } else {
+                console.error("La respuesta no contiene un array válido");
+            }
+        })
+        .catch(error => console.error("Error al obtener tareas:", error));
+    };
+
+    // POST
+    const postTask = () => {
+        const newTask = { label: input, is_done: false };
+        fetch(`${api}/todos/${user}`, {
+            method: "POST",
+            body: JSON.stringify(newTask),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+        .then(resp => resp.json())
+        .then(() => {
+            getTask();
+        })
+        .catch(error => console.error("Error al añadir tarea:", error));
+    };
+
+    // PUT
+    const putTask = (id) => {
+        const changeTask = { label: input, is_done: true };
+        fetch(`${api}/todos/${id}`, {
+            method: "PUT",
+            body: JSON.stringify(changeTask),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+        .then(resp => {
+            if (resp.ok) {
+                setArray(prevArray => prevArray.filter(task => task.id !== id));
+                return resp.json();
+            }
+        })       
+        .then((data) => {
+            console.log(data)
+        })
+        .catch(error => console.error("Error al añadir tarea:", error));
+    };
+
+    const handleDeleteTask = (deleteTask) => {
+        fetch(`${api}/todos/${deleteTask.id}`, {
+            method:"DELETE",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(resp => {
+            if (resp.ok) {
+                setArray(prevArray => prevArray.filter(task => task.id !== deleteTask.id));
+                // getTask();
+                return resp.json()
+            }
+        }).then((data) => {
+            console.log(data)
+        }).catch(error => console.error("Error al añadir tarea:", error));
+    }
 
     const handleInput = (e) => {
         setInput(e.target.value);
@@ -11,7 +96,7 @@ const Component = () => {
 
     const handleAddTask = () => {
         if (input.trim() !== "") {
-            setArray([input, ...array]);
+            postTask();
             setInput("");
         }
     };
@@ -20,10 +105,6 @@ const Component = () => {
         if (e.key === "Enter") {
             handleAddTask();
         }
-    };
-
-    const handleDeleteTask = (deleteTask) => {
-        setArray(array.filter(task => task !== deleteTask));
     };
 
     return (
@@ -35,14 +116,16 @@ const Component = () => {
                 className="inpt mb-1 rounded-1 bg-dark text-light"
                 onChange={handleInput}
                 onKeyDown={handleKeyDown}
-                onFocus={() => input === "Escribe una tarea..." && setInput("")}
-                onBlur={() => input === "" && setInput("Escribe una tarea...")}
+                placeholder="Escribe una tarea..."
+                // onFocus={() => input === "Escribe una tarea..." && setInput("")}
+                // onBlur={() => input === "" && setInput("Escribe una tarea...")}
             />
-           <div>
+            <div>
                 {array.map((el, index) => (
                     <div key={index} style={{ position: "relative" }} className="task-container">
-                        <Card title={el} />
+                        <Card title={el.label} />
                         <i id="icon" className="fa-solid fa-xmark delete-icon" onClick={() => handleDeleteTask(el)}/>
+                        <i className="fa-solid fa-check change-icon" onClick={() => putTask(el.id)}/>
                     </div>
                 ))}
             </div>
