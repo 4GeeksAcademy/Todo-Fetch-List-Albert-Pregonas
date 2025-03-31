@@ -37,6 +37,8 @@ const Component = () => {
     // POST
     const postTask = () => {
         const newTask = { label: input, is_done: false };
+        setArray([...array, newTask]); // Faster but not optimal because the browser state and the server could get out of sync
+    
         fetch(`${api}/todos/${user}`, {
             method: "POST",
             body: JSON.stringify(newTask),
